@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>WebSocket Test</title>
+
+<button onclick="connectMe()">Polacz</button> <br>
+<button onclick="disconnectMe()">Rozlacz</button> <br>
+
+<input type="text" id="wiadomosc"> <br>
+<button onclick="sendMe()">Wyslij</button>
+
+<script language="javascript" type="text/javascript">
+
+var wsUri = "ws://echo.websocket.org/";
+var output;
+
+function init()
+{
+	output = document.getElementById("output");
+	testWebSocket();
+}
+
+
+function onOpen(evt)
+{
+	writeToScreen("CONNECTED");
+}
+
+function connectMe(){
+	websocket = new WebSocket(wsUri);
+	websocket.onopen = function(evt) { onOpen(evt) };
+	websocket.onclose = function(evt) { onClose(evt) };
+	websocket.onmessage = function(evt) { onMessage(evt) };
+	websocket.onerror = function(evt) { onError(evt) };
+}
+
+function disconnectMe(){
+	websocket.close();
+}
+
+function sendMe(){
+	var mess = document.getElementById('wiadomosc').value;
+	doSend(mess);
+}
+function onClose(evt)
+{
+	writeToScreen("DISCONNECTED");
+}
+
+function onMessage(evt)
+{
+	writeToScreen('<span style="color: blue;">Odpowiedz: ' + evt.data+'</span>');
+}
+
+function onError(evt)
+{
+	writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+}
+
+function doSend(message)
+{
+	writeToScreen("Wyslano: " + message);
+	websocket.send(message);
+}
+
+function writeToScreen(message)
+{
+	var pre = document.createElement("p");
+	pre.style.wordWrap = "break-word";
+	pre.innerHTML = message;
+	output.appendChild(pre);
+}
+
+window.addEventListener("load", init, false);
+
+</script>
+
+<h2>Logi:</h2>
+
+<div id="output"></div>
